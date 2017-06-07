@@ -22,9 +22,10 @@ key1 = SecretObject.SecretObject("Key","door")
 hallway = room.Room("hallway", "You are in a dimly lit hallway", ["north","west","n","w"], "There is a light switch. Turn on the lights?", "You can now see better",None)
 closet = room.Room("closet", "You are in a musty closet with 2 jackets in it", ["north", "east","e", "n"], "Ruffle through the clothes?", "Already found key", key1)
 hallway2 = room.Room("hallway","You are in a long hall lit by small lights",["west","north","east","south","w","n","e","s"], None, None, None)
+guestRoom = room.Room("guest bedroom", "You are in a small guestroom with 1 bed", ["east","e"], None, None, None)
 currentRoom = hallway
 inventory = []
-firstFloor = [[0,1,2,None],[None,hallway2,5,6],[closet,hallway,9,10]]
+firstFloor = [[0,1,2,None],[guestRoom,hallway2,5,6],[closet,hallway,9,10]]
 
 currentFloor = firstFloor
 

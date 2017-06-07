@@ -11,7 +11,10 @@ class Room:
     def intro(self):
         return self.description
     def exitWays(self):
-        print("There are exits to your " + ", ".join(self.exits[:len(self.exits)//2 -1]) + " and " + str(self.exits[len(self.exits)//2-1]))
+        if len(self.exits)//2 > 1:
+            print("There are exits to your " + ", ".join(self.exits[:len(self.exits)//2 -1]) + " and " + str(self.exits[len(self.exits)//2-1]))
+        else:
+            print("There is an exit to your",str(self.exits[0]))
         direction = input("Which direction ")
         while direction.lower() not in self.exits:
             print("Can't go that way")
