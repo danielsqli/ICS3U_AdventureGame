@@ -17,7 +17,7 @@ class Room:
         else:
             print("There is an exit to your",str(self.exits[0]))
         direction = input("Which direction ")
-        while direction.lower() not in self.exits and direction.lower() not in "".join([x[0] for x in self.exits]):
+        while (direction.lower() not in self.exits and direction.lower() not in "".join([x[0] for x in self.exits])) or len(direction) < 1:
             print("Can't go that way")
             direction = input("Which direction ")
 

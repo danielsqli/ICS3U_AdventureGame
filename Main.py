@@ -24,6 +24,7 @@ def moveFloors(currentRoom, currentFloor, houseMap):
             if direction == "down":
                 return houseMap[i-1]
 
+
 key1 = SecretObject.SecretObject("Key","door")
 
 hallway = room.Room("hallway", "You are in a dimly lit hallway", ["north","west"],"There is a light switch. Turn on the lights?", "You can now see better",None)
@@ -69,11 +70,14 @@ while True:
     if currentRoom.type == "Room":
         currentRoom = moveRooms(currentRoom,currentFloor)
     elif currentRoom.type == "Stairs":
+        for row, i in enumerate(currentFloor):
+            try:
+                column = i.index(currentRoom)
+                break
+            except ValueError:
+                continue
         currentFloor = moveFloors(currentRoom, currentFloor,house)
-        print(currentFloor)
-        for i in range(len(currentFloor)):
-            for j in range(len(currentFloor[i])):
-                if currentFloor[i][j].type == "Stairs":
-                    currentRoom = currentFloor[i][j]
+        currentRoom = currentFloor[row+1][column]
+        print(currentRoom.name)
 
     print("---------------------------------------------------")
