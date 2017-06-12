@@ -62,8 +62,6 @@ house = [firstFloor,secondFloor]
 currentFloor = firstFloor
 
 while True:
-
-
     print(currentRoom.intro())
     if currentRoom.action != None:
         currentRoom.doAction()
