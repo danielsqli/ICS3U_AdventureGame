@@ -5,6 +5,4 @@ class MagicDoor:
         self.key = key
     def unlocked(self):
         if self.key in Main.inventory:
-            return True
-        else:
-            return False
+            self.disabled = True

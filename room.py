@@ -1,6 +1,6 @@
 import SecretSwitch
 class Room:
-    def __init__(self, name, description, exits , action, result, secretitem):
+    def __init__(self, name, description, exits , action, result, secretitem, magicdoor):
         self.name = name
         self.description = description
         self.exits = exits
@@ -8,6 +8,7 @@ class Room:
         self.result = result
         self.secretItem = secretitem
         self.completed = False
+        self.magicDoor = magicdoor
     def intro(self):
         return self.description
     def exitWays(self):
@@ -29,6 +30,8 @@ class Room:
                 else:
                     print(self.result)
         self.completed = True
+
+
 
 
 
