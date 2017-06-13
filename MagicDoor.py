@@ -1,7 +1,8 @@
 class MagicDoor:
-    def __init__(self, key):
+    def __init__(self, key): # add ghost
         self.disabled = False
         self.key = key
+       # self.ghost = ghost
     def unlocked(self,inventory):
         if self.key in inventory:
             return True

@@ -70,6 +70,8 @@ while True:
         newRoom = moveRooms(currentRoom,currentFloor)
         while newRoom.magicDoor != None and newRoom.locked(inventory) == True:
             print("The room is locked")
+            #if currentRoom.magicDoor.ghost == True:
+                #ghostAttack()
             newRoom = moveRooms(currentRoom, currentFloor)
         currentRoom = newRoom
     elif currentRoom.type == "Stairs":
