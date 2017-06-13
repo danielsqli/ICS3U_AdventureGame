@@ -1,6 +1,7 @@
 import room
 import SecretObject
 import MagicDoor
+import random
 
 def moveRooms(currentRoom, floorMap):
     direction = currentRoom.exitWays().lower()[0]
@@ -25,19 +26,60 @@ def moveFloors(currentRoom, currentFloor, houseMap):
             if direction == "down":
                 return houseMap[i-1]
 
-key1 = SecretObject.SecretObject("Key","Opens a door")
+def ghostAttack(inventory,mastery):
+    print("GHOST ATTACK")
+    print("WOLOLOLOOOHOHooOHHOH")
+    print("The ghost is spooking you")
+    print("What to do")
+    if vacuum in inventory:
+        print("1. Try to attack it \n2. Use the vacuum \n3. Run away \n4. Yell at the ghost")
+        choice = int(input("Enter a choice # "))
+        if choice == 1:
+            print("You missed")
+            return True
+        elif choice == 2:
+            chance = random.randint(1,100)
+            if chance < (mastery//5+1)* 10:
+                print("You captured the ghost")
+                mastery += 1
+                return mastery
+        elif choice == 3:
+            print("The ghost caught you")
+            return True
+        elif choice == 4:
+            print("It was not very effective")
+            return True
+    else:
+        print("1. Try to attack it \n2. Run away \n3. Yell at the ghost")
+        choice = int(input("Enter a choice # "))
+        if choice == 1:
+            print("You missed")
+        elif choice == 2:
+            print("The ghost caught you")
+        elif choice == 3:
+            print("It was not very effective")
+        return True
 
-door1 = MagicDoor.MagicDoor(key1)
 
-hallway = room.Room("hallway", "You are in a dimly lit hallway", ["north","west"],["Turn on the lights?","Try to open the door behind you?","Nothing"], ["You can now see better","GHOST ATTACK"],None, None)
-closet = room.Room("closet", "You are in a musty closet with 2 jackets in it", ["north", "east"], ["Ruffle through the clothes?","Put on the shoes","Nothing"], ["","GHOST ATTACK","Nothing"], key1, None)
+guestRoomKey = SecretObject.SecretObject("Key","Opens a door")
+staircaseKey1 = SecretObject.SecretObject("Key", "Opens a door")
+fork = SecretObject.SecretObject("Key shaped like a fork","Opens a door")
+bathroomKey1 = SecretObject.SecretObject("Key","Opens a door")
+vacuum = SecretObject.SecretObject("Vacuum", "Captures ghosts")
+
+guestRoomDoor = MagicDoor.MagicDoor(guestRoomKey,None)
+staircaseDoor1 = MagicDoor.MagicDoor(staircaseKey1, True)
+kitchenDoor = MagicDoor.MagicDoor(fork,True)
+
+hallway = room.Room("hallway", "You are in a dimly lit hallway", ["north","west"],["Turn on the lights?","Try to open the door behind you?","Nothing"], ["You can now see better","GHOST ATTACK","Nothing"],None, None)
+closet = room.Room("closet", "You are in a musty closet with 2 jackets in it", ["north", "east"], ["Ruffle through the clothes?","Put on the shoes","Nothing"], ["","GHOST ATTACK","Nothing"], guestRoomKey, None)
 hallway2 = room.Room("hallway","You are in a long hall lit by small lights",["west","north","east","south"], None, None, None, None)
-guestRoom = room.Room("guest bedroom", "You are in a small guestroom with 1 bed", ["east"], None, None, None, door1)
-washroom = room.Room("washroom", "You are in a bathroom with a sink and a toilet", ["south"], None, None, None, None)
-diningRoom = room.Room("dining room","You are in a dining room. The table is set", ["north"], None, None, None, None)
+guestRoom = room.Room("guest bedroom", "You are in a small guestroom with 1 bed", ["east"], ["Look behind the bed","Open a drawer","Nothing"], ["","GHOST ATTACK","Nothing"], vacuum, guestRoomDoor)
+washroom = room.Room("washroom", "You are in a bathroom with a sink and a toilet", ["south"], ["Turn on the sink","Stick your hand into the toilet","Use the toilet","Nothing"], ["GHOST ATTACK","","GHOST ATTACK","GHOST ATTACK"], staircaseKey1, None)
+diningRoom = room.Room("dining room","You are in a dining room. The table is set", ["north"], ["Sit down at the table","Pick up a fork","Break a plate","Nothing"], ["You feel rested","","GHOST ATTACK","Nothing"], fork, None)
 hallway3 = room.Room("hallway", "You are at the end of a hall",["north","east"], None, None, None, None)
-kitchen = room.Room("kitchen","You are in a kitchen. There is a whole chicken on the counter",["south","west"],None, None, None, None)
-staircase1 = room.Stairs("staircase","You are in a stairwell that leads up",["up"], None, None, None, None, "Stairs")
+kitchen = room.Room("kitchen","You are in a kitchen. There is a whole chicken on the counter",["south","west"],["Eat the chicken","Cut the chicken","Knock the chicken onto the ground","Nothing"], ["GHOST ATTACK","","GHOST ATTACK","Nothing"],bathroomKey1 , kitchenDoor)
+staircase1 = room.Stairs("staircase","You are in a stairwell that leads up",["up"], None, None, None, staircaseDoor1, "Stairs", True)
 
 staircase2 = room.Stairs("staircase","You are in a stairwell that leads up and down",["up", "down"], None, None, None, None,"Stairs")
 ladder = room.Stairs("ladder","You found a ladder that leads up",["up"], None, None, None, None, "Stairs")
@@ -48,7 +90,7 @@ hallway4 = room.Room("hallway", "You are in a thin hallway",["north","west","sou
 hallway5 = room.Room("hallway", "You are in a thin hallway",["north","west","south","east"], None, None, None, None)
 hallway6 = room.Room("hallway", "You are at the end of a hall",["north","east"], None, None, None, None)
 currentRoom = hallway
-inventory = []
+checkPointRoom = hallway
 firstFloor = [[None,washroom,staircase1,None],
               [guestRoom,hallway2,hallway3,kitchen],
               [closet,hallway,None,diningRoom]]
@@ -61,16 +103,48 @@ house = [firstFloor,secondFloor]
 
 currentFloor = firstFloor
 
+inventory = []
+vacuumMastery = 0
+death = False
 while True:
+    print("---------------------------------------------------")
     print(currentRoom.intro())
+    if currentRoom.checkPoint == True:
+        print("You have reached a checkpoint")
+        checkPointRoom == currentRoom
+        currentRoom.checkPoint = False
     if currentRoom.action != None:
-        currentRoom.doAction()
+        result = currentRoom.doAction()
+        if currentRoom.secretItem != None:
+            inventory.append(currentRoom.secretItem)
+        elif result:
+            if ghostAttack(inventory,vacuumMastery):
+                currentRoom = checkPointRoom
+                print("You were defeated...")
+                input("*press enter to continue*")
+                continue
+            else:
+                vacuumMastery += 1
     print()
     if currentRoom.type == "Room":
         newRoom = moveRooms(currentRoom,currentFloor)
         while newRoom.magicDoor != None and newRoom.locked(inventory) == True:
             print("The room is locked")
+            if newRoom.magicDoor.ghost != None:
+                result = ghostAttack(inventory,vacuumMastery)
+                if type(result) == int:
+                    vacuumMastery = result
+                else:
+                    currentRoom = checkPointRoom
+                    print(currentRoom)
+                    print("You were defeated")
+                    print("press enter to continue")
+                    death = True
+                    break
             newRoom = moveRooms(currentRoom, currentFloor)
+        if death == True:
+            death = False
+            continue
         currentRoom = newRoom
     elif currentRoom.type == "Stairs":
         for row in range(len(currentFloor)):
@@ -81,6 +155,4 @@ while True:
                 continue
         currentFloor = moveFloors(currentRoom, currentFloor,house)
         currentRoom = currentFloor[row+1][column]
-        print(currentRoom.name)
 
-    print("---------------------------------------------------")
