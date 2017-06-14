@@ -1,7 +1,7 @@
 import SecretSwitch
 import MagicDoor
 class Room:
-    def __init__(self, name, description, exits , action, result, secretitem, magicdoor, type="Room"):
+    def __init__(self, name, description, exits , action, result, secretitem, magicdoor, type="Room", checkpoint=False):
         self.name = name
         self.description = description
         self.exits = exits
@@ -11,6 +11,7 @@ class Room:
         self.completed = False
         self.type = type
         self.magicDoor = magicdoor
+        self.checkPoint = checkpoint
     def intro(self):
         return self.description
     def exitWays(self):
@@ -30,10 +31,10 @@ class Room:
             for i in range(len(self.action)):
                 print("{0}. {1}".format(i+1,self.action[i]))
             choice = int(input("Enter number of the choice: "))
-            if self.action[choice-1] == "Nothing":
+            if self.result[choice-1] == "Nothing":
                 return
-            elif self.action[choice-1] == "GHOST ATTACK":
-                print("GHOST ATTACK")
+            elif self.result[choice-1] == "GHOST ATTACK":
+                return True
             elif self.secretItem != None:
                 print("You found a",self.secretItem.name)
                 print("The",self.secretItem.name,self.secretItem.function)
@@ -43,7 +44,7 @@ class Room:
                 self.completed = True
     def locked(self, inventory):
         if self.magicDoor.unlocked(inventory) == True:
-            self.magicDoor.disabled == True
+            self.magicDoor.disabled = True
         if self.magicDoor.disabled == True:
             return False
         else:
