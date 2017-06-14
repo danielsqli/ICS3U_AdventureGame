@@ -61,15 +61,23 @@ def ghostAttack(inventory,mastery):
         return True
 
 
-guestRoomKey = SecretObject.SecretObject("Key","Opens a door")
-staircaseKey1 = SecretObject.SecretObject("Key", "Opens a door")
-fork = SecretObject.SecretObject("Key shaped like a fork","Opens a door")
-bathroomKey1 = SecretObject.SecretObject("Key","Opens a door")
-vacuum = SecretObject.SecretObject("Vacuum", "Captures ghosts")
+guestRoomKey = SecretObject.SecretObject("Key","opens a door","was in the jacket pocket")
+staircaseKey1 = SecretObject.SecretObject("Key", "opens a door","was in the toilet")
+fork = SecretObject.SecretObject("fork","looks like it can pick a lock","was on the table")
+bathroomKey1 = SecretObject.SecretObject("Key","opens a door","was in the chicken")
+ladderKey = SecretObject.SecretObject("Key","opens a door","was")
+bedroomKey1 = SecretObject.SecretObject("Key","opens a door","was in the drawer")
+bedroomKey2 = SecretObject.SecretObject("Key","opens a door","was ")
+
+vacuum = SecretObject.SecretObject("Vacuum", "captures ghosts","was behind the bed")
 
 guestRoomDoor = MagicDoor.MagicDoor(guestRoomKey,None)
 staircaseDoor1 = MagicDoor.MagicDoor(staircaseKey1, True)
 kitchenDoor = MagicDoor.MagicDoor(fork,True)
+ladderDoor = MagicDoor.MagicDoor(ladderKey, True)
+bathroomDoor1 = MagicDoor.MagicDoor(bathroomKey1, True)
+bedroomDoor1 = MagicDoor.MagicDoor([bedroomKey1,bedroomKey2], True)
+
 
 hallway = room.Room("hallway", "You are in a dimly lit hallway", ["north","west"],["Turn on the lights?","Try to open the door behind you?","Nothing"], ["You can now see better","GHOST ATTACK","Nothing"],None, None)
 closet = room.Room("closet", "You are in a musty closet with 2 jackets in it", ["north", "east"], ["Ruffle through the clothes?","Put on the shoes","Nothing"], ["","GHOST ATTACK","Nothing"], guestRoomKey, None)
@@ -77,15 +85,15 @@ hallway2 = room.Room("hallway","You are in a long hall lit by small lights",["we
 guestRoom = room.Room("guest bedroom", "You are in a small guestroom with 1 bed", ["east"], ["Look behind the bed","Open a drawer","Nothing"], ["","GHOST ATTACK","Nothing"], vacuum, guestRoomDoor)
 washroom = room.Room("washroom", "You are in a bathroom with a sink and a toilet", ["south"], ["Turn on the sink","Stick your hand into the toilet","Use the toilet","Nothing"], ["GHOST ATTACK","","GHOST ATTACK","GHOST ATTACK"], staircaseKey1, None)
 diningRoom = room.Room("dining room","You are in a dining room. The table is set", ["north"], ["Sit down at the table","Pick up a fork","Break a plate","Nothing"], ["You feel rested","","GHOST ATTACK","Nothing"], fork, None)
-hallway3 = room.Room("hallway", "You are at the end of a hall",["north","east"], None, None, None, None)
-kitchen = room.Room("kitchen","You are in a kitchen. There is a whole chicken on the counter",["south","west"],["Eat the chicken","Cut the chicken","Knock the chicken onto the ground","Nothing"], ["GHOST ATTACK","","GHOST ATTACK","Nothing"],bathroomKey1 , kitchenDoor)
+hallway3 = room.Room("hallway", "You are at the end of a hall",["north","east","south"], None, None, None, None)
+kitchen = room.Room("kitchen","You are in a kitchen. There is a whole chicken on the counter",["west"],["Eat the chicken","Cut the chicken","Knock the chicken onto the ground","Nothing"], ["GHOST ATTACK","","GHOST ATTACK","Nothing"],bathroomKey1, kitchenDoor)
 staircase1 = room.Stairs("staircase","You are in a stairwell that leads up",["up"], None, None, None, staircaseDoor1, "Stairs", True)
 
 staircase2 = room.Stairs("staircase","You are in a stairwell that leads up and down",["up", "down"], None, None, None, None,"Stairs")
-ladder = room.Stairs("ladder","You found a ladder that leads up",["up"], None, None, None, None, "Stairs")
-bathroom = room.Room("bathroom", "You are in a bathroom with a sink, a toilet and a bathtub", ["south"], None, None, None, None)
-bedroom = room.Room("master bedroom", "You are in a large bedroom with a bed, a counter, and a fireplace", ["north"], None, None, None, None)
-bedroom2 = room.Room("bedroom", "You are in a small bedroom with 1 bed", ["north"], None, None, None, None)
+ladder = room.Stairs("ladder","You found a ladder that leads up",["up"], None, None, None, ladderDoor, "Stairs")
+bathroom = room.Room("bathroom", "You are in a bathroom with a sink, a toilet and a bathtub", ["south"], ["Turn on the shower","Wash your face in the sink","Open the drawer","Nothing"],["GHOST ATTACK","GHOST ATTACK","","GHOST ATTACK"], bedroomKey1, bathroomDoor1)
+bedroom = room.Room("master bedroom", "You are in a large bedroom with a bed, a counter, and a fireplace", ["north"], ["Turn on the fireplace","Check out the counter","Look under the bed","Nothing"], ["GHOST ATTACK","","GHOST ATTACK","Nothing"], bedroomKey2, None)
+bedroom2 = room.Room("bedroom", "You are in a small bedroom with 1 bed", ["north"], None, None, None, bedroomDoor1)
 hallway4 = room.Room("hallway", "You are in a thin hallway",["north","west","south"], None, None, None, None)
 hallway5 = room.Room("hallway", "You are in a thin hallway",["north","west","south","east"], None, None, None, None)
 hallway6 = room.Room("hallway", "You are at the end of a hall",["north","east"], None, None, None, None)
@@ -93,7 +101,7 @@ currentRoom = hallway
 checkPointRoom = hallway
 firstFloor = [[None,washroom,staircase1,None],
               [guestRoom,hallway2,hallway3,kitchen],
-              [closet,hallway,None,diningRoom]]
+              [closet,hallway,diningRoom,None]]
 
 secondFloor = [[ladder, bathroom, staircase2],
                [hallway6,hallway5,hallway4],
@@ -125,6 +133,7 @@ while True:
                 continue
             else:
                 vacuumMastery += 1
+                print("The ghost was sucked into the vacuum")
     print()
     if currentRoom.type == "Room":
         newRoom = moveRooms(currentRoom,currentFloor)
@@ -134,9 +143,11 @@ while True:
                 result = ghostAttack(inventory,vacuumMastery)
                 if type(result) == int:
                     vacuumMastery = result
+                    newRoom.magicDoor.ghost = False
+                    print("The door unlocked itself")
+                    break
                 else:
                     currentRoom = checkPointRoom
-                    print(currentRoom)
                     print("You were defeated")
                     print("press enter to continue")
                     death = True

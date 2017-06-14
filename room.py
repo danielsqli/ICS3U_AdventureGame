@@ -30,14 +30,18 @@ class Room:
             print("What to do?")
             for i in range(len(self.action)):
                 print("{0}. {1}".format(i+1,self.action[i]))
-            choice = int(input("Enter number of the choice: "))
+            while True:
+                try:
+                    choice = int(input("Enter number of the choice: "))
+                    break
+                except ValueError:
+                    print("That is not valid")
             if self.result[choice-1] == "Nothing":
                 return
             elif self.result[choice-1] == "GHOST ATTACK":
                 return True
             elif self.secretItem != None:
-                print("You found a",self.secretItem.name)
-                print("The",self.secretItem.name,self.secretItem.function)
+                print(self.secretItem)
                 self.completed = True
             else:
                 print(self.result[choice-1])
