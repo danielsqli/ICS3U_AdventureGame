@@ -36,13 +36,17 @@ class Room:
                     break
                 except ValueError:
                     print("That is not valid")
-            if self.result[choice-1] == "Nothing":
+            if choice == 10:
+                return "Save"
+            elif self.result[choice-1] == "Nothing":
                 return
             elif self.result[choice-1] == "GHOST ATTACK":
                 return True
             elif self.secretItem != None:
                 print(self.secretItem)
                 self.completed = True
+                return False
+
             else:
                 print(self.result[choice-1])
                 self.completed = True
