@@ -15,13 +15,18 @@ def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpoi
     :param checkpointRoom: the current checkpoint you are at
     :return: None
     """
+    # Opens the file to save
     saveFile = open("SaveFile","w")
+
+    # Writes the value of each variable as a string into the file
     saveFile.write("".join(currentRoom.name.split()) + " \n")
     saveFile.write(" ".join(["".join(x.name.split()) for x in inventory if x != None]) + " \n")
     saveFile.write(((list(houseDict.keys())[list(houseDict.values()).index(currentFloor)])) + " \n")
     saveFile.write(str(vacuumMastery) + "\n")
     ghostlessRooms = []
     completedRooms = []
+
+    # Create a list and append values for the completed rooms and ghostless rooms
     for i in range(len(currentFloor)):
         for j in range(len(currentFloor[i])):
             if currentFloor[i][j] is not None:
@@ -30,9 +35,13 @@ def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpoi
                         ghostlessRooms.append("".join(currentFloor[i][j].name.split()))
                 if currentFloor[i][j].completed:
                     completedRooms.append("".join(currentFloor[i][j].name.split()))
+
+    # Writing those lists
     saveFile.write(" ".join(ghostlessRooms) + "\n")
     saveFile.write(" ".join(completedRooms) + "\n")
     saveFile.write("".join(currentRoom.name.split()) + " \n")
+
+    # Close file
     saveFile.close()
 
 def loadSave(houseDict,inventoryDict, houseMap):
@@ -41,10 +50,15 @@ def loadSave(houseDict,inventoryDict, houseMap):
     :param houseDict: dictionary of the house floors
     :param inventoryDict: dictionary of the items in your inventory
     :param houseMap: map of the house
-    :return: values for the variables saved in a usable form for the game
+    :return: tuple - values for the variables saved in a usable form for the game
     """
+    # Opens file to load save
     saveFile = open("SaveFile","r")
+
+    # Reads the whole file
     loadFile = saveFile.readlines()
+
+    # Retrieves string value of the corresponding line and transforms it into a usable variable type
     currentFloorName = " ".join(loadFile[2].split())
     currentRoomName = " ".join(loadFile[0].split())
     itemNames = loadFile[1].split()
@@ -52,6 +66,8 @@ def loadSave(houseDict,inventoryDict, houseMap):
     currentFloor = houseDict[currentFloorName]
     checkpointRoomName = " ".join(loadFile[6].split())
     inventory = []
+
+    # Finding the current room in the house based on name
     for i in range(len(currentFloor)):
         for j in range(len(currentFloor[i])):
             if currentFloor[i][j] != None:
@@ -61,6 +77,8 @@ def loadSave(houseDict,inventoryDict, houseMap):
                     checkpointRoom = currentFloor[i][j]
     completedRooms = "".join(loadFile[5]).split()
     ghostlessRooms = "".join(loadFile[4]).split()
+
+    # Finding all of the completed rooms and ghostless rooms in the house and editing the house map
     for i in houseMap:
         for j in range(len(i)):
             for k in range(len(i[j])):
@@ -72,8 +90,12 @@ def loadSave(houseDict,inventoryDict, houseMap):
                     if i[j][k] is not None and i[j][k].name == p:
                         houseDict[((list(houseDict.keys())[list(houseDict.values()).index(currentFloor)]))][i][k].magicDoor.ghost = False
                         i[j][k] = houseDict[((list(houseDict.keys())[list(houseDict.values()).index(currentFloor)]))][j][k]
+
+    # Appending all items back into the inventory
     for i in range(len(itemNames)):
         inventory.append(inventoryDict[itemNames[i]])
+
+    # Close file and return values as a tuple
     saveFile.close()
     return currentFloor,currentRoom,inventory,vacuumMastery,houseMap,checkpointRoom
 
@@ -84,7 +106,10 @@ def moveRooms(currentRoom, floorMap):
     :param floorMap: map of the current floor
     :return: class room.Room - the new room you are in
     """
+    # Getting a direction to move in
     direction = currentRoom.exitWays().lower()[0]
+
+    # Finding the current room and returning a new room based on the direction
     for i in range(len(floorMap)):
         for j in range(len(floorMap[i])):
             if floorMap[i][j] == currentRoom:
@@ -105,7 +130,10 @@ def moveFloors(currentRoom, currentFloor, houseMap):
     :param houseMap: map of the house
     :return: list - the new floor you are on
     """
+    # Getting a direction to move floors with
     direction = currentRoom.exitWays().lower()
+
+    # Finding current floor and changing floors based on direction
     for i in range(len(houseMap)):
         if currentFloor == houseMap[i]:
             if direction == "up":
@@ -121,12 +149,16 @@ def ghostAttack(inventory,mastery):
     :return: bool - True if you lost
     :return: int - the amount of ghosts killed if you won
     """
+    # Print statements to begin fight
     print("GHOST ATTACK")
     print("WOLOLOLOOOHOHooOHHOH")
     print("The ghost is spooking you")
     print("What to do")
+
+    # Check if vacuum is in inventory. Vacuum is only way to beat ghosts
     if vacuum in inventory:
         print("1. Try to attack it \n2. Use the vacuum \n3. Run away \n4. Yell at the ghost")
+        # Gets a choice and if it isn't the vacuum, return True, meaning you lost
         while True:
             try:
                 choice = int(input("Enter a choice # "))
@@ -138,17 +170,26 @@ def ghostAttack(inventory,mastery):
             print("You missed")
             return True
         elif choice == 2:
+            # If choice is vacuum, create a random number and if it is within the range of the percent, capture the ghost
             chance = random.randint(1,100)
+
+            # Percent is %10 per each 5 ghosts captured
             if chance < (mastery//5+1)* 10:
                 print("You captured the ghost")
+
+                # Add 1 to total ghosts killed and return total
                 mastery += 1
                 return mastery
+            else:
+                return True
         elif choice == 3:
             print("The ghost caught you")
             return True
         elif choice == 4:
             print("It was not very effective")
             return True
+
+    # If vacuum is not in inventory, give 3 useless options that all lead to defeat
     else:
         print("1. Try to attack it \n2. Run away \n3. Yell at the ghost")
         while True:
@@ -158,6 +199,8 @@ def ghostAttack(inventory,mastery):
             except ValueError:
                 print("That is not valid")
                 continue
+
+        # Print a different fail statement the choices.
         if choice == 1:
             print("You missed")
         elif choice == 2:
