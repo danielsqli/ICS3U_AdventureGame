@@ -5,6 +5,16 @@ import random
 import SecretSwitch
 
 def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpointRoom):
+    """
+    saves the game by recording values in a text file
+    :param currentRoom: current room you are in
+    :param inventory: items in your inventory
+    :param houseDict: dictionary of the floors in the house
+    :param currentFloor: current floor you are in
+    :param vacuumMastery: amount of ghosts killed
+    :param checkpointRoom: the current checkpoint you are at
+    :return: None
+    """
     saveFile = open("SaveFile","w")
     saveFile.write("".join(currentRoom.name.split()) + " \n")
     saveFile.write(" ".join(["".join(x.name.split()) for x in inventory if x != None]) + " \n")
@@ -26,6 +36,13 @@ def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpoi
     saveFile.close()
 
 def loadSave(houseDict,inventoryDict, houseMap):
+    """
+    Loads the game at the previous state you saved it at
+    :param houseDict: dictionary of the house floors
+    :param inventoryDict: dictionary of the items in your inventory
+    :param houseMap: map of the house
+    :return: values for the variables saved in a usable form for the game
+    """
     saveFile = open("SaveFile","r")
     loadFile = saveFile.readlines()
     currentFloorName = " ".join(loadFile[2].split())
@@ -61,6 +78,12 @@ def loadSave(houseDict,inventoryDict, houseMap):
     return currentFloor,currentRoom,inventory,vacuumMastery,houseMap,checkpointRoom
 
 def moveRooms(currentRoom, floorMap):
+    """
+    Moving between rooms
+    :param currentRoom: current room you are in
+    :param floorMap: map of the current floor
+    :return: class room.Room - the new room you are in
+    """
     direction = currentRoom.exitWays().lower()[0]
     for i in range(len(floorMap)):
         for j in range(len(floorMap[i])):
@@ -75,6 +98,13 @@ def moveRooms(currentRoom, floorMap):
                    return floorMap[i+1][j]
 
 def moveFloors(currentRoom, currentFloor, houseMap):
+    """
+    Moving between floors
+    :param currentRoom: current room you are in
+    :param currentFloor: current floor you are on
+    :param houseMap: map of the house
+    :return: list - the new floor you are on
+    """
     direction = currentRoom.exitWays().lower()
     for i in range(len(houseMap)):
         if currentFloor == houseMap[i]:
@@ -84,6 +114,13 @@ def moveFloors(currentRoom, currentFloor, houseMap):
                 return houseMap[i-1]
 
 def ghostAttack(inventory,mastery):
+    """
+    Battle sequence between a ghost
+    :param inventory: items in your inventory
+    :param mastery: amount of ghosts killed
+    :return: bool - True if you lost
+    :return: int - the amount of ghosts killed if you won
+    """
     print("GHOST ATTACK")
     print("WOLOLOLOOOHOHooOHHOH")
     print("The ghost is spooking you")
@@ -129,7 +166,7 @@ def ghostAttack(inventory,mastery):
             print("It was not very effective")
         return True
 
-
+# Initializing all of the items in the game
 inventoryDict = {}
 guestRoomKey = SecretObject.SecretObject("Guest Room Key","opens a door","was in the jacket pocket")
 inventoryDict["GuestRoomKey"] = guestRoomKey
@@ -165,9 +202,9 @@ finalKey3 = SecretObject.SecretObject("Exit Key 3",'Opens a door','')
 inventoryDict['ExitKey3'] = finalKey3
 finalKey4 = SecretObject.SecretObject("Exit Key 4",'Opens a door','')
 inventoryDict['ExitKey4'] = finalKey4
-
 vacuum = SecretObject.SecretObject("Vacuum", "captures ghosts","was behind the bed")
 
+# Initializing all of the locked doors in the game
 guestRoomDoor = MagicDoor.MagicDoor(guestRoomKey,False)
 staircaseDoor1 = MagicDoor.MagicDoor(staircaseKey1, True)
 kitchenDoor = MagicDoor.MagicDoor(fork,True)
@@ -180,6 +217,8 @@ bedroomDoor3 = MagicDoor.MagicDoor(bedroomKey4,True)
 guestRoomDoor2 = MagicDoor.MagicDoor(guestRoomKey2,True)
 finalDoor = MagicDoor.MagicDoor([finalKey3,finalKey4,finalKey1,finalKey2],True)
 
+# Initializing all of the rooms in the game
+# First Floor
 hallway = room.Room("hallway", "You are in a dimly lit hallway", ["north","west"],["Turn on the lights?","Try to open the door behind you?","Nothing"], ["You can now see better","GHOST ATTACK","Nothing"],None, None)
 closet = room.Room("closet", "You are in a musty closet with 2 jackets in it", ["north", "east"], ["Ruffle through the clothes?","Put on the shoes","Nothing"], [0,"GHOST ATTACK","Nothing"], guestRoomKey, None)
 hallway2 = room.Room("hallway","You are in a long hall lit by small lights",["west","north","east","south"], None, None, None, None)
@@ -190,8 +229,11 @@ hallway3 = room.Room("hallway", "You are at the end of a hall",["west","north","
 kitchen = room.Room("kitchen","You are in a kitchen. There is a whole chicken on the counter",["west"],["Eat the chicken","Cut the chicken","Knock the chicken onto the ground","Nothing"], ["GHOST ATTACK",0,"GHOST ATTACK","Nothing"],bathroomKey1, kitchenDoor)
 staircase1 = room.Stairs("staircase","You are in a stairwell that leads up",["up"], None, None, None, staircaseDoor1, "Stairs")
 newStaircase1 = room.Stairs("staircase","You are in a stairwell that leads up and down",["up","down"], None, None, None, None, "Stairs")
+
+# This is the secret switch that has to be initialized before the basement but after the first floor
 basementSwitch = SecretSwitch.SecretSwitch("Switch",[staircase1,newStaircase1],"You heard a loud shuffling from the first floor")
 
+# Second Floor
 staircase2 = room.Stairs("staircase","You are in a stairwell that leads down",["down"], None, None, None, None,"Stairs")
 ladder = room.Stairs("ladder","You found a ladder that leads up",["up"], None, None, None, ladderDoor, "Stairs")
 bathroom = room.Room("bathroom", "You are in a bathroom with a sink, a toilet and a bathtub", ["south"], ["Turn on the shower","Wash your face in the sink","Open the drawer","Nothing"],["GHOST ATTACK","GHOST ATTACK",0,"GHOST ATTACK"], bedroomKey1, bathroomDoor1)
@@ -201,6 +243,7 @@ hallway4 = room.Room("hallway", "You are in a thin hallway",["north","west","sou
 hallway5 = room.Room("hallway", "You are in a thin hallway",["north","west","south","east"], None, None, None, None)
 hallway6 = room.Room("hallway", "You are at the end of a hall",["north","east"], None, None, None, None)
 
+# Attic
 ladder2 = room.Stairs("ladder","You found a ladder that leads down",["down"], None, None, None, None, "Stairs")
 hallway7 = room.Room("hallway", "You are in a small corridor with a low ceiling",["north","east"], None, None, None, None,'Room',True)
 hallway8 = room.Room("hallway",'You are down the hall',['west','east','north'],None, None, None, None)
@@ -212,6 +255,7 @@ bedroom3 = room.Room("bedroom",'You are in an empty bedroom with an empty bed fr
 bedroom4 = room.Room("bedroom",'You are in a small bedroom with only a chair and desk',['west'],['Sit on the chair','Split the desk in half with your hands','Stab the wall with your fork in anger','Nothing'],['GHOST ATTACK',0,'GHOST ATTACK','Nothing'],ventilationRoomKey3,None)
 ventilationRoom = room.Room("ventilation room","You are in a long room with fans that lead to outside the house",['east'],['Check behind a fan','Stick your hand in a fan','Hit one of the fans','Nothing'],['GHOST ATTACK',0,'GHOST ATTACK','Nothing'],basementSwitch,ventilationRoomDoor)
 
+# Basement
 staircase3 = room.Stairs("staircase","You found a staircase that leads up",["up"], None, None, None, None, "Stairs")
 hallway12 = room.Room("hallway",'You are in a hallway with wooden walls',['north','south','west'],None, None, None, None,"Room",True)
 hallway13 = room.Room("hallway",'You are in a hallway with wooden walls',['north','west','east','south'],None, None, None, None)
@@ -223,7 +267,7 @@ washroom2 = room.Room('washroom','You are in a dusty washroom with a broken sink
 closet2 = room.Room('closet','You are in an empty closet',['north'],['Do chin ups on the bars','Yell at the top of your lungs','Admire your keychain','Nothing'],[0,'GHOST ATTACK','GHOST ATTACK','Nothing'],finalKey4,None)
 finalExit = room.Room('exit','You are finally outside',None,None,None,None,finalDoor)
 
-
+# Initializing house
 currentRoom = hallway
 checkPointRoom = hallway
 
@@ -245,6 +289,8 @@ basement = [[None, washroom2, bedroom5,staircase3],
 
 houseDict = {"First Floor":firstFloor,"Second Floor":secondFloor,"Attic":attic,"Basement":basement}
 house = [basement, firstFloor,secondFloor,attic]
+
+# Initializing other game variables
 currentFloor = firstFloor
 checkPointRoom = hallway
 inventory = []
@@ -252,6 +298,7 @@ vacuumMastery = 0
 death = False
 victory = False
 
+# Loading a saved game
 print("Do you want to load the save? (y/n)")
 choice = input()
 while choice.lower() not in ['y', 'n', 'yes', 'no']:
@@ -261,19 +308,28 @@ if choice.lower() in ['y','yes']:
     currentFloor,currentRoom,inventory,vacuumMastery,house,checkPointRoom = values
 
 
-
+# Game sequence
 while True:
     print("---------------------------------------------------")
+    # Introducing room you are in
     print(currentRoom.intro())
+
+    # Setting room as checkpoint if it is a checkpoint
     if currentRoom.checkPoint == True:
         print("You have reached a checkpoint")
         checkPointRoom == currentRoom
         currentRoom.checkPoint = False
+
+    # Possible actions in room
     if currentRoom.action != None:
         result = currentRoom.doAction(inventory)
+
+        # Victory
         if result == "win":
             victory = True
             break
+
+        # Saving
         if result == "Save":
             print("Do you want to save the game? (y/n)")
             choice = input()
@@ -283,9 +339,12 @@ while True:
                 save(currentRoom,inventory,houseDict,currentFloor,vacuumMastery,checkPointRoom)
                 saved = True
                 break
+        # Finding the secret switch
         elif result == "switch":
             currentRoom.secretItem.discovery()
             house = currentRoom.secretItem.action(house)
+
+        # Finding an item
         elif type(result) == int:
             if type(currentRoom.secretItem) == list:
                 print(currentRoom.secretItem[result])
@@ -293,6 +352,8 @@ while True:
             else:
                 print(currentRoom.secretItem)
                 inventory.append(currentRoom.secretItem)
+
+        # Finding a ghost
         elif result:
             if ghostAttack(inventory,vacuumMastery):
                 currentRoom = checkPointRoom
@@ -303,31 +364,43 @@ while True:
                 vacuumMastery += 1
                 print("The ghost was sucked into the vacuum")
 
-
-
     print()
+
+    # Moving rooms or floors sequence
+    # Moving between rooms
     if currentRoom.type == "Room":
         newRoom = moveRooms(currentRoom,currentFloor)
+
+        # Checks if room you want to move in is locked
         while newRoom.magicDoor != None and newRoom.locked(inventory) == True:
             print("The room is locked")
+
+            # Initialize ghost fight if it is locked
             if newRoom.magicDoor.ghost != None:
                 result = ghostAttack(inventory,vacuumMastery)
+
                 if type(result) == int:
+                    # Changing the amount of ghosts killed and unlocking the door
                     vacuumMastery = result
                     newRoom.magicDoor.ghost = False
                     print("The door unlocked itself")
                     break
                 else:
+                    # Going back to checkpoint if defeated
                     currentRoom = checkPointRoom
                     print("You were defeated")
                     print("press enter to continue")
                     death = True
                     break
-            newRoom = moveRooms(currentRoom, currentFloor)
+
+        # If you lost you go back you the checkpoint
         if death == True:
             death = False
             continue
+
+        # If you won you enter the room
         currentRoom = newRoom
+    # Moving between floors
     elif currentRoom.type == "Stairs":
         for row in range(len(currentFloor)):
             try:
@@ -335,9 +408,11 @@ while True:
                 break
             except ValueError:
                 continue
+        # Changing the floor and the current room to be the room below the staircase or ladder
         currentFloor = moveFloors(currentRoom, currentFloor,house)
         currentRoom = currentFloor[row+1][column]
 
+# If won, prints "you win"
 if victory == True:
     from colorama import init
     from termcolor import cprint
