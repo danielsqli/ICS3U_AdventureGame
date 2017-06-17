@@ -25,8 +25,10 @@ class Room:
             direction = input("Which direction ")
 
         return direction
-    def doAction(self):
+    def doAction(self,inventory):
         if self.completed == False:
+            if self.action is None:
+                return "win"
             print("What to do?")
             for i in range(len(self.action)):
                 print("{0}. {1}".format(i+1,self.action[i]))
@@ -43,8 +45,27 @@ class Room:
             elif self.result[choice-1] == "GHOST ATTACK":
                 return True
             elif type(self.result[choice-1]) == int:
-                self.completed = True
-                return self.result[choice-1]
+                itemsGathered = 0
+                if type(self.secretItem) == list:
+                    for i in range(len(self.secretItem)):
+                        if self.secretItem[i] in inventory:
+                            itemsGathered += 1
+                        if self.secretItem[i].type == "Switch":
+                            return "switch"
+                    if itemsGathered == len(self.secretItem):
+                        self.completed = True
+
+                else:
+                    self.completed = True
+                    if self.secretItem.type == "Switch":
+                        return "switch"
+
+
+
+                result = self.result[choice-1]
+                self.action.remove(self.action[choice - 1])
+                self.result.remove(self.result[choice - 1])
+                return result
 
             else:
                 print(self.result[choice-1])
