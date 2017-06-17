@@ -42,14 +42,15 @@ class Room:
                 return
             elif self.result[choice-1] == "GHOST ATTACK":
                 return True
-            elif self.secretItem != None:
-                print(self.secretItem)
+            elif type(self.result[choice-1]) == int:
                 self.completed = True
-                return False
+                return self.result[choice-1]
 
             else:
                 print(self.result[choice-1])
-                self.completed = True
+                self.action.remove(self.action[choice-1])
+                self.result.remove(self.result[choice-1])
+
     def locked(self, inventory):
         if self.magicDoor.unlocked(inventory) == True:
             self.magicDoor.disabled = True
@@ -63,10 +64,12 @@ class Stairs(Room):
     def exitWays(self):
         if len(self.exits) > 1:
             direction = input("Up or down?")
+            while direction.lower() not in ["up", "down"]:
+                direction = input("Not valid, up or down?")
         else:
             direction = input('You can go ' + self.exits[0])
-        while direction.lower() not in ("up", "down"):
-            direction = input("Not valid, up or down?")
+            while direction.lower() != self.exits[0]:
+                direction = input("Not valid, " + self.exits[0])
         print("Going " + direction)
 
         return direction
