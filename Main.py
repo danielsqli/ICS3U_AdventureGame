@@ -4,7 +4,7 @@ import MagicDoor
 import random
 import SecretSwitch
 
-def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpointRoom):
+def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpointRoom, switch):
     """
     saves the game by recording values in a text file
     :param currentRoom: current room you are in
@@ -40,7 +40,8 @@ def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpoi
     # Writing those lists
     saveFile.write(" ".join(ghostlessRooms) + "\n")
     saveFile.write(" ".join(completedRooms) + "\n")
-    saveFile.write("".join(checkPointRoom.name.split()) + " \n")
+    saveFile.write("".join(checkpointRoom.name.split()) + " \n")
+    saveFile.write(str(switch))
 
     # Close file
     saveFile.close()
@@ -95,10 +96,10 @@ def loadSave(houseDict,inventoryDict, houseMap):
     # Appending all items back into the inventory
     for i in range(len(itemNames)):
         inventory.append(inventoryDict[itemNames[i]])
-
+    switch = bool(loadFile[7])
     # Close file and return values as a tuple
     saveFile.close()
-    return currentFloor,currentRoom,inventory,vacuumMastery,houseMap,checkpointRoom
+    return currentFloor,currentRoom,inventory,vacuumMastery,houseMap,checkpointRoom,switch
 
 def moveRooms(currentRoom, floorMap):
     """
@@ -349,7 +350,7 @@ while choice.lower() not in ['y', 'n', 'yes', 'no']:
     choice = input("That is not valid. Re-enter: ")
 if choice.lower() in ['y','yes']:
     values = loadSave(houseDict,inventoryDict,house)
-    currentFloor,currentRoom,inventory,vacuumMastery,house,checkPointRoom = values
+    currentFloor,currentRoom,inventory,vacuumMastery,house,checkPointRoom,basementSwitch.activated = values
 
 
 # Game sequence

@@ -13,6 +13,7 @@ class SecretSwitch:
         print("You found a secret " + self.name)
         print("You flipped the switch")
         print(self.result)
+        self.activated = True
     def action(self,houseMap):
         """
         Changes a room into another room
