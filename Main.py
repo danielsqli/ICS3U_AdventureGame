@@ -96,7 +96,11 @@ def loadSave(houseDict,inventoryDict, houseMap):
     # Appending all items back into the inventory
     for i in range(len(itemNames)):
         inventory.append(inventoryDict[itemNames[i]])
-    switch = bool(loadFile[7])
+    switch = loadFile[7]
+    if switch == "False":
+        switch = False
+    else:
+        switch = True
     # Close file and return values as a tuple
     saveFile.close()
     return currentFloor,currentRoom,inventory,vacuumMastery,houseMap,checkpointRoom,switch
@@ -340,8 +344,9 @@ currentFloor = firstFloor
 checkPointRoom = hallway
 inventory = []
 vacuumMastery = 0
-death = False
+respawn = False
 victory = False
+lives = 10
 
 # Loading a saved game
 print("Do you want to load the save? (y/n)")
@@ -351,12 +356,12 @@ while choice.lower() not in ['y', 'n', 'yes', 'no']:
 if choice.lower() in ['y','yes']:
     values = loadSave(houseDict,inventoryDict,house)
     currentFloor,currentRoom,inventory,vacuumMastery,house,checkPointRoom,basementSwitch.activated = values
-    if basementSwitch.activated == True:
+    if basementSwitch.activated:
         basementSwitch.action(house)
 
 
 # Game sequence
-while True:
+while lives > 0:
     print("---------------------------------------------------")
     # Introducing room you are in
     print(currentRoom.intro())
@@ -406,6 +411,7 @@ while True:
                 currentRoom = checkPointRoom
                 print("You were defeated...")
                 input("*press enter to continue*")
+                lives -= 1
                 continue
             else:
                 vacuumMastery += 1
@@ -437,12 +443,13 @@ while True:
                     currentRoom = checkPointRoom
                     print("You were defeated")
                     print("press enter to continue")
-                    death = True
+                    lives -= 1
+                    respawn = True
                     break
 
         # If you lost you go back you the checkpoint
-        if death == True:
-            death = False
+        if respawn == True:
+            respawn = False
             continue
 
         # If you won you enter the room
@@ -466,5 +473,12 @@ if victory == True:
     from pyfiglet import figlet_format
 
     cprint(figlet_format("VICTORY", font='starwars'),
-           'red', 'on_white', attrs=['bold'])
+           'blue', 'on_white', attrs=['bold'])
+else:
+    from colorama import init
+    from termcolor import cprint
+    from pyfiglet import figlet_format
+
+    cprint(figlet_format("YOU DIED", font='starwars'),
+           'white', 'on_blue', attrs=['bold'])
 
