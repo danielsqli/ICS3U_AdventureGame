@@ -351,6 +351,8 @@ while choice.lower() not in ['y', 'n', 'yes', 'no']:
 if choice.lower() in ['y','yes']:
     values = loadSave(houseDict,inventoryDict,house)
     currentFloor,currentRoom,inventory,vacuumMastery,house,checkPointRoom,basementSwitch.activated = values
+    if basementSwitch.activated == True:
+        basementSwitch.action(house)
 
 
 # Game sequence
@@ -381,7 +383,7 @@ while True:
             while choice.lower() not in ['y','n','yes','no']:
                 choice = input("That is not valid. Re-enter: ")
             if choice.lower() in ['y','yes']:
-                save(currentRoom,inventory,houseDict,currentFloor,vacuumMastery,checkPointRoom)
+                save(currentRoom,inventory,houseDict,currentFloor,vacuumMastery,checkPointRoom,basementSwitch.activated)
                 saved = True
                 break
         # Finding the secret switch
