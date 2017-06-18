@@ -44,8 +44,8 @@ class Room:
         # Checking if all useful actions have been completed
         if self.completed == False:
 
-            # Checking if action is None
-            if self.action is None:
+            # Checking if action is 'win'
+            if self.action[0] == 'win':
                 # return "win" if so
                 return "win"
             print("What to do?")
@@ -61,7 +61,7 @@ class Room:
                     print("That is not valid")
 
             # Checking if choice is save
-            if choice.lower() == "save":
+            if choice == 10:
                 return "Save"
 
             # Checking if result of choice is Nothing

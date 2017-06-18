@@ -21,7 +21,7 @@ def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpoi
     # Writes the value of each variable as a string into the file
     saveFile.write("".join(currentRoom.name.split()) + " \n")
     saveFile.write(" ".join(["".join(x.name.split()) for x in inventory if x != None]) + " \n")
-    saveFile.write(((list(houseDict.keys())[list(houseDict.values()).index(currentFloor)])) + " \n")
+    saveFile.write((list(houseDict.keys())[list(houseDict.values()).index(currentFloor)]) + " \n")
     saveFile.write(str(vacuumMastery) + "\n")
     ghostlessRooms = []
     completedRooms = []
@@ -33,13 +33,14 @@ def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpoi
                 if currentFloor[i][j].magicDoor is not None:
                     if not currentFloor[i][j].magicDoor.ghost:
                         ghostlessRooms.append("".join(currentFloor[i][j].name.split()))
+
                 if currentFloor[i][j].completed:
                     completedRooms.append("".join(currentFloor[i][j].name.split()))
 
     # Writing those lists
     saveFile.write(" ".join(ghostlessRooms) + "\n")
     saveFile.write(" ".join(completedRooms) + "\n")
-    saveFile.write("".join(currentRoom.name.split()) + " \n")
+    saveFile.write("".join(checkPointRoom.name.split()) + " \n")
 
     # Close file
     saveFile.close()
@@ -84,12 +85,12 @@ def loadSave(houseDict,inventoryDict, houseMap):
             for k in range(len(i[j])):
                 for l in completedRooms:
                     if i[j][k] is not None and i[j][k].name == l:
-                        houseDict[(list(houseDict.keys())[list(houseDict.values()).index(currentFloor)])][j][k].completed = True
-                        i[j][k] = houseDict[((list(houseDict.keys())[list(houseDict.values()).index(currentFloor)]))][j][k]
+                        houseDict[(list(houseDict.keys())[list(houseDict.values()).index(i)])][j][k].completed = True
+                        i[j][k] = houseDict[(list(houseDict.keys())[list(houseDict.values()).index(i)])][j][k]
                 for p in ghostlessRooms:
                     if i[j][k] is not None and i[j][k].name == p:
-                        houseDict[((list(houseDict.keys())[list(houseDict.values()).index(currentFloor)]))][i][k].magicDoor.ghost = False
-                        i[j][k] = houseDict[((list(houseDict.keys())[list(houseDict.values()).index(currentFloor)]))][j][k]
+                        houseDict[(list(houseDict.keys())[list(houseDict.values()).index(i)])][i][k].magicDoor.ghost = False
+                        i[j][k] = houseDict[(list(houseDict.keys())[list(houseDict.values()).index(i)])][j][k]
 
     # Appending all items back into the inventory
     for i in range(len(itemNames)):
@@ -239,11 +240,11 @@ guestRoomKey2 = SecretObject.SecretObject("Guest Room Key 2","opens a door","was
 inventoryDict["GuestRoomKey2"] = guestRoomKey2
 finalKey1 = SecretObject.SecretObject("Exit Key 1",'Opens a door','bounced onto your face whilst you were jumping on the bed')
 inventoryDict['ExitKey1'] = finalKey1
-finalKey2 = SecretObject.SecretObject("Exit Key 2",'Opens a door','')
+finalKey2 = SecretObject.SecretObject("Exit Key 2",'Opens a door','was in the vacuum')
 inventoryDict['ExitKey2'] = finalKey2
-finalKey3 = SecretObject.SecretObject("Exit Key 3",'Opens a door','')
+finalKey3 = SecretObject.SecretObject("Exit Key 3",'Opens a door','under the toilet seat')
 inventoryDict['ExitKey3'] = finalKey3
-finalKey4 = SecretObject.SecretObject("Exit Key 4",'Opens a door','')
+finalKey4 = SecretObject.SecretObject("Exit Key 4",'Opens a door','hanging on the bars')
 inventoryDict['ExitKey4'] = finalKey4
 vacuum = SecretObject.SecretObject("Vacuum", "captures ghosts","was behind the bed")
 
@@ -295,20 +296,20 @@ hallway10 = room.Room("hallway", "You are at the end of a hall",["south","east"]
 hallway11 = room.Room("hallway", "You are at the end of a hall",["north","east","west"], None, None, None, None)
 storageRoom = room.Room("storage room","You are in a dusty room with a lot of boxes",["south"],["Open one of the boxes",'Kick the boxes over','Turn on the lights','Grab the broom and sweep the floor','Nothing'],['GHOST ATTACK',0,'GHOST ATTACK','The floor has been cleaned','Nothing'],ventilationRoomKey1, None)
 bedroom3 = room.Room("bedroom",'You are in an empty bedroom with an empty bed frame',['west'],['Look into the bed frame','Place one of the conveniently placed mattresses into the bedframe','Take one of the pillow covers','Nothing'],['GHOST ATTACK',0,1,'Nothing'],[ventilationRoomKey2,bedroomKey3],None)
-bedroom4 = room.Room("bedroom",'You are in a small bedroom with only a chair and desk',['west'],['Sit on the chair','Split the desk in half with your hands','Stab the wall with your fork in anger','Nothing'],['GHOST ATTACK',0,'GHOST ATTACK','Nothing'],ventilationRoomKey3,None)
+bedroom4 = room.Room("bedroom",'You are in a small bedroom with only a chair and desk',['west'],['Sit on the chair','Split the desk in half with your hands','Stab the wall with your fork in anger','Nothing'],['GHOST ATTACK',0,'GHOST ATTACK','Nothing'],ventilationRoomKey3,bedroomDoor2)
 ventilationRoom = room.Room("ventilation room","You are in a long room with fans that lead to outside the house",['east'],['Check behind a fan','Stick your hand in a fan','Hit one of the fans','Nothing'],['GHOST ATTACK',0,'GHOST ATTACK','Nothing'],basementSwitch,ventilationRoomDoor)
 
 # Basement
 staircase3 = room.Stairs("staircase","You found a staircase that leads up",["up"], None, None, None, None, "Stairs")
-hallway12 = room.Room("hallway",'You are in a hallway with wooden walls',['north','south','west'],None, None, None, None,"Room",True)
-hallway13 = room.Room("hallway",'You are in a hallway with wooden walls',['north','west','east','south'],None, None, None, None)
+hallway12 = room.Room("hallway",'You are in a hallway with wooden walls',['north','south','west','east'],None, None, None, None,"Room",True)
+hallway13 = room.Room("hallway",'You are in a hallway with wooden walls',['north','west','south'],None, None, None, None)
 laundryRoom = room.Room("laundry room",'You are in a laundry room with a washer and a dryer',['north'],['Open the washer','Open the dryer','Kick the basket over','Nothing'],['GHOST ATTACK','GHOST ATTACK',"GHOST ATTACK",0],bedroomKey4,None)
 bedroom5 = room.Room("bedroom",'You are in a bedroom with a clothes rack and a bed',['south'],['Take down a shirt','Jump on the bed','Kick the clothes rack over','Nothing'],['GHOST ATTACK',0,1,'Nothing'],[finalKey1,guestRoomKey2],bedroomDoor3)
 guestRoom2 = room.Room("guest room",'You are in a guest room with a pile of clothes on the ground',['north'],['Jump into the pile','Scratch your head in confusion','Vacuum up the clothes','Nothing'],['GHOST ATTACK','GHOST ATTACK',0,'Nothing'],finalKey2,guestRoomDoor2)
 hallway14 = room.Room("hallway",'You are in a short hallway with doors on all sides',['north','east','south','west'],None, None, None, None)
 washroom2 = room.Room('washroom','You are in a dusty washroom with a broken sink and toilet',['south'],['Try to turn on the sink','Sit on the toilet','Flush the toilet','Nothing'],['GHOST ATTACK',0,'GHOST ATTACK','Nothing'],finalKey3,None)
 closet2 = room.Room('closet','You are in an empty closet',['north'],['Do chin ups on the bars','Yell at the top of your lungs','Admire your keychain','Nothing'],[0,'GHOST ATTACK','GHOST ATTACK','Nothing'],finalKey4,None)
-finalExit = room.Room('exit','You are finally outside',None,None,None,None,finalDoor)
+finalExit = room.Room('exit','You are finally outside',None,['win'],None,None,finalDoor)
 
 # Initializing house
 currentRoom = hallway
@@ -326,8 +327,8 @@ attic = [[ladder2, storageRoom, hallway10, bedroom3],
          [hallway7, hallway8, hallway9, None],
          [None, ventilationRoom, hallway11, bedroom4]]
 
-basement = [[None, washroom2, bedroom5,staircase3],
-            [finalExit,hallway14,hallway13,hallway12],
+basement = [[None, washroom2, staircase3, bedroom5],
+            [finalExit,hallway14,hallway12,hallway13],
             [None,closet2,guestRoom2,laundryRoom]]
 
 houseDict = {"First Floor":firstFloor,"Second Floor":secondFloor,"Attic":attic,"Basement":basement}
