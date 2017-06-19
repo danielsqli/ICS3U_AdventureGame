@@ -21,7 +21,7 @@ def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpoi
     # Writes the value of each variable as a string into the file
     saveFile.write("".join(currentRoom.name.split()) + " \n")
     saveFile.write(" ".join(["".join(x.name.split()) for x in inventory if x != None]) + " \n")
-    saveFile.write((list(houseDict.keys())[list(houseDict.values()).index(currentFloor)]) + " \n")
+    saveFile.write(((list(houseDict.keys())[list(houseDict.values()).index(currentFloor)])) + " \n")
     saveFile.write(str(vacuumMastery) + "\n")
     ghostlessRooms = []
     completedRooms = []
@@ -45,6 +45,7 @@ def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpoi
 
     # Close file
     saveFile.close()
+
 
 def loadSave(houseDict,inventoryDict, houseMap):
     """
@@ -86,11 +87,11 @@ def loadSave(houseDict,inventoryDict, houseMap):
             for k in range(len(i[j])):
                 for l in completedRooms:
                     if i[j][k] is not None and i[j][k].name == l:
-                        houseDict[(list(houseDict.keys())[list(houseDict.values()).index(i)])][j][k].completed = True
+                        houseDict[((list(houseDict.keys())[list(houseDict.values()).index(i)]))][j][k].completed = True
                         i[j][k] = houseDict[(list(houseDict.keys())[list(houseDict.values()).index(i)])][j][k]
                 for p in ghostlessRooms:
                     if i[j][k] is not None and i[j][k].name == p:
-                        houseDict[(list(houseDict.keys())[list(houseDict.values()).index(i)])][i][k].magicDoor.ghost = False
+                        houseDict[(list(houseDict.keys())[list(houseDict.values()).index(i)])][j][k].magicDoor.ghost = False
                         i[j][k] = houseDict[(list(houseDict.keys())[list(houseDict.values()).index(i)])][j][k]
 
     # Appending all items back into the inventory
@@ -161,6 +162,7 @@ def ghostAttack(inventory,mastery):
     print("GHOST ATTACK")
     print("WOLOLOLOOOHOHooOHHOH")
     print("The ghost is spooking you")
+    print()
     print("What to do")
 
     # Check if vacuum is in inventory. Vacuum is only way to beat ghosts
@@ -182,7 +184,7 @@ def ghostAttack(inventory,mastery):
             chance = random.randint(1,100)
 
             # Percent is %10 per each 5 ghosts captured
-            if chance < (mastery//5+1)* 10:
+            if chance < (mastery//5+1)* 25:
                 print("You captured the ghost")
 
                 # Add 1 to total ghosts killed and return total
@@ -222,21 +224,36 @@ def gameIntro():
     Introduction at the beginning of game for backstory
     :return:
     """
-    print("You were going to your grandmothers house for mothers day...")
+    print("You were going to your grandmothers house to give her a blouse...")
     input("*Press enter to continue")
-    print("But it turns out, she was dead!")
+    print("But it turns out, she was dead")
     input("*Press enter to continue")
     print("And you only realized after you entered the house...")
     input("*Press enter to continue")
-    print("So now you are stuck and have to find a way out!")
+    print("And the ghosts are after your head!")
     input("*Press enter to continue")
     print("You knew your grandmother really liked keys...")
     input("*Press enter to continue")
-    print("So maybe you should find all the keys in the house and try to get to the second exit around the back in the basement!")
+    print("Maybe you should find them!")
     input("*Press enter to continue")
-    print("But how do you get there...")
+    print("With those you could break free...")
+    input("*Press enter to continue")
+    print("But where ever could they be")
     input("*Press enter to continue")
 
+def instructions():
+    """
+    Instructions for the game
+    :return: None
+    """
+    print("To play this game, every room that isn't a hallway has actions")
+    input("*Press enter to continue")
+    print("Some of the rooms are locked")
+    input("*Press enter to continue")
+    print("In order to beat this game, you must find all the keys and leave the building")
+    input("*Press enter to continue")
+    print("In order to save, type in 10 when you are choosing an action in a room")
+    input("*Press enter to continue")
 
 # Initializing all of the items in the game
 inventoryDict = {}
@@ -386,7 +403,7 @@ if choice.lower() in ['l','L']:
         basementSwitch.action(house)
 else:
     gameIntro()
-   # instructions()
+    instructions()
 # Game sequence
 while lives > 0:
     print("---------------------------------------------------")
@@ -396,7 +413,7 @@ while lives > 0:
     # Setting room as checkpoint if it is a checkpoint
     if currentRoom.checkPoint == True:
         print("You have reached a checkpoint")
-        checkPointRoom == currentRoom
+        checkPointRoom = currentRoom
         currentRoom.checkPoint = False
 
     # Possible actions in room
@@ -417,6 +434,7 @@ while lives > 0:
             if choice.lower() in ['y','yes']:
                 save(currentRoom,inventory,houseDict,currentFloor,vacuumMastery,checkPointRoom,basementSwitch.activated)
                 saved = True
+                victory = "Save"
                 break
         # Finding the secret switch
         elif result == "switch":
@@ -434,15 +452,15 @@ while lives > 0:
 
         # Finding a ghost
         elif result:
-            if ghostAttack(inventory,vacuumMastery):
+            if type(ghostAttack(inventory,vacuumMastery)) == int:
+                vacuumMastery = result
+                print("The ghost was sucked into the vacuum")
+            else:
                 currentRoom = checkPointRoom
                 print("You were defeated...")
                 input("*press enter to continue*")
                 lives -= 1
                 continue
-            else:
-                vacuumMastery += 1
-                print("The ghost was sucked into the vacuum")
 
     print()
 
@@ -501,6 +519,8 @@ if victory == True:
 
     cprint(figlet_format("VICTORY", font='starwars'),
            'blue', 'on_white', attrs=['bold'])
+elif victory == "Save":
+    print("Saved")
 else:
     from colorama import init
     from termcolor import cprint
