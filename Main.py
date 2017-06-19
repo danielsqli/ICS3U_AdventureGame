@@ -96,6 +96,8 @@ def loadSave(houseDict,inventoryDict, houseMap):
     # Appending all items back into the inventory
     for i in range(len(itemNames)):
         inventory.append(inventoryDict[itemNames[i]])
+
+    # Reading the if the basement switch has been activated to know if basement has been unlocked
     switch = loadFile[7]
     if switch == "False":
         switch = False
@@ -214,6 +216,27 @@ def ghostAttack(inventory,mastery):
         elif choice == 3:
             print("It was not very effective")
         return True
+
+def gameIntro():
+    """
+    Introduction at the beginning of game for backstory
+    :return:
+    """
+    print("You were going to your grandmothers house for mothers day...")
+    input("*Press enter to continue")
+    print("But it turns out, she was dead!")
+    input("*Press enter to continue")
+    print("And you only realized after you entered the house...")
+    input("*Press enter to continue")
+    print("So now you are stuck and have to find a way out!")
+    input("*Press enter to continue")
+    print("You knew your grandmother really liked keys...")
+    input("*Press enter to continue")
+    print("So maybe you should find all the keys in the house and try to get to the second exit around the back in the basement!")
+    input("*Press enter to continue")
+    print("But how do you get there...")
+    input("*Press enter to continue")
+
 
 # Initializing all of the items in the game
 inventoryDict = {}
@@ -348,17 +371,21 @@ respawn = False
 victory = False
 lives = 10
 
-# Loading a saved game
-print("Do you want to load the save? (y/n)")
+# Starting a new game or loading an old one
+print("GRANDMA'S HAUNTED MANSION")
+print("New game or load game?")
+print("1. New game (n)")
+print("2. Load game (l)")
 choice = input()
-while choice.lower() not in ['y', 'n', 'yes', 'no']:
+while choice.lower() not in ['l', 'L', 'n', 'N']:
     choice = input("That is not valid. Re-enter: ")
-if choice.lower() in ['y','yes']:
+if choice.lower() in ['l','L']:
     values = loadSave(houseDict,inventoryDict,house)
     currentFloor,currentRoom,inventory,vacuumMastery,house,checkPointRoom,basementSwitch.activated = values
     if basementSwitch.activated:
         basementSwitch.action(house)
-
+else:
+    gameIntro()
 
 # Game sequence
 while lives > 0:
