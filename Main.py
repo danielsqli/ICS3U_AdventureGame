@@ -386,7 +386,7 @@ if choice.lower() in ['l','L']:
         basementSwitch.action(house)
 else:
     gameIntro()
-
+   # instructions()
 # Game sequence
 while lives > 0:
     print("---------------------------------------------------")
