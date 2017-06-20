@@ -1,8 +1,11 @@
+
+
 import room
 import SecretObject
 import MagicDoor
 import random
 import SecretSwitch
+
 
 def save(currentRoom, inventory, houseDict, currentFloor, vacuumMastery,checkpointRoom, switch):
     """
@@ -257,11 +260,11 @@ def instructions():
 
 # Initializing all of the items in the game
 inventoryDict = {}
-guestRoomKey = SecretObject.SecretObject("Guest Room Key","opens a door","was in the jacket pocket")
+guestRoomKey = SecretObject.SecretObject("Guest Room Key", "opens a door", "was in the jacket pocket")
 inventoryDict["GuestRoomKey"] = guestRoomKey
-staircaseKey1 = SecretObject.SecretObject("Staircase Key 1", "opens a door","was in the toilet")
+staircaseKey1 = SecretObject.SecretObject("Staircase Key 1", "opens a door", "was in the toilet")
 inventoryDict['StaircaseKey1'] = staircaseKey1
-fork = SecretObject.SecretObject("Fork","looks like it can pick a lock","was on the table")
+fork = SecretObject.SecretObject("Fork", "looks like it can pick a lock","was on the table")
 inventoryDict['Fork'] = fork
 bathroomKey1 = SecretObject.SecretObject("Bathroom Key 1","opens a door","was in the chicken")
 inventoryDict['BathroomKey1'] = bathroomKey1
@@ -427,7 +430,7 @@ while lives > 0:
 
         # Saving
         if result == "Save":
-            print("Do you want to save the game? (y/n)")
+            print("Do you want to save and quit the game? (y/n)")
             choice = input()
             while choice.lower() not in ['y','n','yes','no']:
                 choice = input("That is not valid. Re-enter: ")
